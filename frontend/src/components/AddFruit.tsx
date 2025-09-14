@@ -5,6 +5,8 @@ type AddFruitProps = {
   addFruit: (name: string) => void;
 };
 
+
+
 const AddFruit = (props: AddFruitProps) => {
   const [fruitName, setFruitName] = useState("");
 
@@ -17,15 +19,19 @@ const AddFruit = (props: AddFruitProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={fruitName}
-        onChange={(e) => setFruitName(e.target.value)}
-        placeholder="Enter fruit name"
-      />
-      <button type="submit">Add Fruit</button>
-    </form>
+          <>
+
+            <form onSubmit={handleSubmit}>
+               <input
+                     type="text"
+                     value={fruitName}
+                     onChange={(e) => setFruitName(e.target.value)}
+                     placeholder="Enter fruit name"
+                   />
+                <button type="submit"  style={{ marginLeft: "10px" }}>Add Fruit</button>
+             </form>
+           
+          </>
   );
 };
 

@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import AddFruit from "./AddFruit";
+import UpdateFruit from "./UpdateFruit";
 import api from "../api";
 import * as React from "react";
 
-// Define Fruit type
 type FruitType = {
+  id: number;
   name: string;
 };
 
-
 const Fruit = () => {
   const [fruits, setFruits] = useState<FruitType[]>([]);
+  const [selectedFruit, setSelectedFruit] = useState<FruitType | null>(null); // currently selected fruit
 
-  // Fetch fruits from API
   const fetchFruits = async (): Promise<void> => {
     try {
       const response = await api.get("/fruits");
@@ -22,17 +22,36 @@ const Fruit = () => {
     }
   };
 
+  const updateFruit = async (id: number, name: string): Promise<void> => {
+    try {
+      await api.put(`/fruits/${id}`, { id, name });
+      setSelectedFruit(null); // hide update form after updating
+      fetchFruits();
+    } catch (error) {
+      console.log("Error while updating fruit:", error);
+    }
+  };
+
   const addFruit = async (fruitName: string): Promise<void> => {
     if (!fruitName) return;
     try {
       const response = await api.post<FruitType>("/fruits", { name: fruitName });
-      fetchFruits(); 
       setFruits((prev) => [...prev, response.data]);
     } catch (error) {
       console.log("Error adding fruit:", error);
     }
   };
 
+  //delete fruit
+  const deleteFruit = async (id: number): Promise<void> => {
+    try {
+      await api.delete(`/fruits/${id}`);
+      setFruits(prev => prev.filter(fruit => fruit.id !== id));
+    } catch (error) {
+      console.log("Error deleting fruit:", error);
+    }
+  };
+  
 
   useEffect(() => {
     fetchFruits();
@@ -42,10 +61,25 @@ const Fruit = () => {
     <div>
       <h2>Fruits List</h2>
       <ul>
-        {fruits.map((fruit: { name: any; }, index: string | number) => (
-          <li key={index}>{fruit.name}</li>
+        {fruits.map((fruit) => (
+          <li key={fruit.id}>
+            {fruit.name}{" "}
+            <button onClick={() => setSelectedFruit(fruit)}>Update</button>
+            <button  onClick={() => deleteFruit(fruit.id)}  style={{ marginLeft: "10px" }}>
+                 Delete
+            </button>
+          </li>
         ))}
       </ul>
+
+      {selectedFruit && (
+        <div>
+          <h3>Update Fruit</h3>
+          <UpdateFruit updateFruit={updateFruit} fruit={selectedFruit} />
+        </div>
+      )}
+
+      <h3>Add a New Fruit</h3>
       <AddFruit addFruit={addFruit} />
     </div>
   );
