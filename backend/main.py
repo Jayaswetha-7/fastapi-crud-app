@@ -13,7 +13,7 @@ class Fruits(BaseModel):
 app = FastAPI()
 
 origins =[
-    "https://localhost:3000"
+    "http://localhost:5173"
 ]
 
 app.add_middleware(
